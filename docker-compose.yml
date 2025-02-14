@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+  dev:
+    image: sbtscala/scala-sbt:eclipse-temurin-23.0.1_11_1.10.7_3.6.3
+    working_dir: /work
+    hostname: localhost
+    command: sbt run
+    environment:
+      PORT: 9200
+      OMDB_API_KEY: 7f9b5b06
+      DATABASE_HOST: database
+      DATABASE_NAME: moviedb
+      DATABASE_USERNAME: moviedb
+      DATABASE_PASSWORD: moviedb
+    ports:
+      - "9200:9200"
+      - "8080:8080"
+      - "80:80"
+      - "9000:9000"
+    volumes:
+      - .:/work
+    depends_on:
+      - database
+
+  database:
+    image: postgres:16.0-alpine
+    environment:
+      POSTGRES_USER: moviedb
+      POSTGRES_PASSWORD: moviedb
+      POSTGRES_DB: moviedb
+    ports:
+      - 5432:5432
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+
+volumes:
+  coursier-cache:
+    external: true
+  docker-scala-sbt-cache:
+    external: true
+  ivy-cache:
+    external: true
